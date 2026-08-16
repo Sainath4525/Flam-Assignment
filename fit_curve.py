@@ -1,34 +1,3 @@
-"""
-fit_curve.py
-------------
-Recovers the unknown parameters theta, M, X of the parametric curve
-
-    x(t) = t*cos(theta) - e^(M*|t|) * sin(0.3t) * sin(theta) + X
-    y(t) = 42 + t*sin(theta) + e^(M*|t|) * sin(0.3t) * cos(theta)
-
-given a set of sampled (x, y) points for 6 < t < 60, using nonlinear
-least-squares optimization.
-
-Approach
---------
-1. Load (x, y) data points from xy_data.csv. The specific t-value for
-   each point is NOT given, only that points come from t in (6, 60).
-2. Treat t_i for each data point as an additional unknown (a "latent"
-   parameter) OR, since data are evenly sampled, assume ordering by t.
-   Here we assume rows are given in increasing order of t (as strongly
-   implied by "list of points that lie on the curve for 6 < t < 60"),
-   and assign t values evenly spaced over (6, 60) matching the row count.
-   This is stated explicitly in the README as an assumption.
-3. Define a residual function that computes model (x, y) for a guess of
-   (theta, M, X) and compares to the real data.
-4. Use scipy.optimize.least_squares with bounds matching the assignment:
-      0     < theta < 50 deg  (converted to radians for the fit)
-     -0.05  < M     < 0.05
-      0     < X     < 100
-5. Report the fitted theta (deg + rad), M, X, and the final LaTeX/Desmos
-   string in the required submission format.
-"""
-
 import numpy as np
 import pandas as pd
 from scipy.optimize import least_squares
