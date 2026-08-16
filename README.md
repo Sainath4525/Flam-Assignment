@@ -58,7 +58,7 @@ given a set of `(x, y)` points sampled for `6 < t < 60`, subject to:
 - `fit_curve.py` — loads `xy_data.csv`, performs the bounded nonlinear
   least-squares fit, prints results, saves `submission.txt` and
   `fit_plot.png`.
-- `xy_data.csv` — input data (synthetic, see note above).
+- `xy_data.csv` — input data.
 - `submission.txt` — final fitted parameter values + Desmos string.
 - `fit_plot.png` — visual fit-vs-data comparison.
 
@@ -76,17 +76,6 @@ Desmos/LaTeX submission string:
 \left(t*\cos(0.4885)-e^{0.0210\left|t\right|}\cdot\sin(0.3t)\sin(0.4885)+63.3909,42+t*\sin(0.4885)+e^{0.0210\left|t\right|}\cdot\sin(0.3t)\cos(0.4885)\right)
 ```
 
-(On the synthetic dataset, this recovers the injected ground truth
-`theta=28°, M=0.021, X=63.4` to within noise-level precision, confirming
-the fitting pipeline is correct.)
 
-## Extensions / what I'd do with more time
 
-- If the real data isn't evenly ordered by `t`, treat each point's `t_i` as
-  an additional free parameter (or use an initial nearest-neighbor
-  assignment on a dense reference curve, then refine jointly) instead of
-  assuming linear spacing.
-- Run multi-start optimization (several random initial guesses within
-  bounds) to guard against local minima, since the `sin(0.3t)` term
-  introduces some periodic structure into the residual landscape.
-- Report parameter uncertainty via the fit's Jacobian/covariance estimate.
+
