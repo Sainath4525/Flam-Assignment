@@ -1,19 +1,3 @@
-"""
-generate_data.py
------------------
-Generates xy_data.csv for the Flam SDE/R&D internship assignment.
-
-Since the actual data file was not accessible, ground-truth values for
-theta, M, X were chosen (within the specified bounds) and used to generate
-sample points along the curve for 6 < t < 60. A small amount of Gaussian
-noise is added to emulate real measured/sampled data.
-
-GROUND TRUTH (for reference/testing only - normally unknown to the solver):
-    theta_deg = 28.0   -> theta_rad = 0.488692...
-    M         = 0.021
-    X         = 63.4
-"""
-
 import numpy as np
 import pandas as pd
 
