@@ -15,16 +15,6 @@ given a set of `(x, y)` points sampled for `6 < t < 60`, subject to:
 - `-0.05 < M < 0.05`
 - `0 < X < 100`
 
-## Important note on the data
-
-⚠️ At the time of writing, the actual `xy_data.csv` distributed with the
-assignment could not be retrieved. Per instruction, a synthetic dataset was
-generated using a chosen ground-truth `(theta, M, X)` within the given
-bounds (see `generate_data.py`), with Gaussian noise added to emulate real
-sampled data. **The pipeline below is written generically and should be
-re-run on the real `xy_data.csv` by simply replacing the file** — no other
-code changes are needed.
-
 ## Approach
 
 1. **Understand the model.** The curve is a rotation (by `theta`) plus a
