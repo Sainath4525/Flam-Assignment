@@ -75,6 +75,9 @@ Desmos/LaTeX submission string:
 ```
 \left(t*\cos(0.4885)-e^{0.0210\left|t\right|}\cdot\sin(0.3t)\sin(0.4885)+63.3909,42+t*\sin(0.4885)+e^{0.0210\left|t\right|}\cdot\sin(0.3t)\cos(0.4885)\right)
 ```
+##Graph(Desmos link)
+https://www.desmos.com/calculator/7katdxirsn
+
 
 
 
