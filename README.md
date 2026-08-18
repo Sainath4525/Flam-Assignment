@@ -1,84 +1,124 @@
-# Flam SDE/R&D Internship — Parametric Curve Fitting
+# FLAM SDE/R&D Internship — Parametric Curve Fitting (Updated)
 
 ## Problem
 
-Recover the unknown constants `theta`, `M`, `X` in:
+Recover the unknown constants `theta`, `M`, and `X` in:
 
-```
+```text
 x(t) = t*cos(theta) - e^(M*|t|) * sin(0.3t) * sin(theta) + X
 y(t) = 42 + t*sin(theta) + e^(M*|t|) * sin(0.3t) * cos(theta)
 ```
 
-given a set of `(x, y)` points sampled for `6 < t < 60`, subject to:
+subject to:
 
 - `0° < theta < 50°`
 - `-0.05 < M < 0.05`
 - `0 < X < 100`
+- `6 < t < 60`
 
-## Approach
+## Important change for the new CSV
 
-1. **Understand the model.** The curve is a rotation (by `theta`) plus a
-   damped/growing oscillatory perturbation (`e^(M|t|)*sin(0.3t)`) applied
-   perpendicular to the rotated `t`-axis, plus a translation `(X, 42)`.
-   Since `sin(0.3t)` couples identically into both `x` and `y` (just
-   rotated by `theta`), and the exponential envelope `e^(M|t|)` is shared,
-   the three unknowns are entangled non-linearly — a closed-form solution
-   is impractical, so this is treated as a **nonlinear least-squares curve
-   fitting problem**.
+The supplied CSV contains 1500 `(x, y)` points, but the rows are **shuffled** rather than ordered by increasing `t`.
 
-2. **Assumption on `t` ordering.** The CSV gives `(x, y)` pairs but not the
-   corresponding `t` values. Since the problem states the points "lie on
-   the curve for `6 < t < 60`" as a list, it's assumed the rows are ordered
-   by increasing `t`, evenly spaced across `(6, 60)`. (If the real data is
-   *not* ordered/evenly spaced, an alternative approach — jointly fitting
-   `t_i` per point as latent variables, or matching by nearest-curve-point
-   iteratively — would be needed; see "Extensions" below.)
+Therefore, the old reference approach of using:
 
-3. **Fit with `scipy.optimize.least_squares`.**
-   - Residual vector = concatenation of `(x_pred - x_obs)` and `(y_pred - y_obs)`
-     across all data points.
-   - Parameters optimized: `theta` (in radians internally), `M`, `X`.
-   - Bounds enforced directly via the `trf` (Trust Region Reflective)
-     method, matching the assignment's given ranges.
-   - Initial guess: mid-range values (`theta=25°`, `M=0`, `X=50`).
+```python
+t_data = np.linspace(6, 60, n)
+```
 
-4. **Validate.** The fitted curve is plotted against the input data
-   (`fit_plot.png`) to visually confirm the match, and the mean L1 distance
-   between the fitted curve and (in this synthetic case) the known ground
-   truth is reported as a sanity check.
+is not valid for this new dataset.
 
-5. **Report final answer** in both raw parameter form and as a Desmos/LaTeX
-   parametric string, per the assignment's required submission format.
+Instead, the updated solution uses the geometry of the parametric model.
 
-## Files
+Define:
 
-- `generate_data.py` — generates the synthetic `xy_data.csv` (only needed
-  because the real file wasn't available; **skip this and drop in the real
-  CSV instead** when available).
-- `fit_curve.py` — loads `xy_data.csv`, performs the bounded nonlinear
-  least-squares fit, prints results, saves `submission.txt` and
-  `fit_plot.png`.
-- `xy_data.csv` — input data.
-- `submission.txt` — final fitted parameter values + Desmos string.
-- `fit_plot.png` — visual fit-vs-data comparison.
+```text
+A(t) = e^(M|t|) sin(0.3t)
+```
+
+Then:
+
+```text
+(x-X, y-42)
+= t(cos(theta), sin(theta))
+  + A(t)(-sin(theta), cos(theta))
+```
+
+Projecting an observed point onto the rotated axes gives:
+
+```text
+t = (x-X)cos(theta) + (y-42)sin(theta)
+
+A = -(x-X)sin(theta) + (y-42)cos(theta)
+```
+
+The curve condition is therefore:
+
+```text
+A = e^(M|t|) sin(0.3t)
+```
+
+The three unknown parameters are fitted by bounded nonlinear least squares using this relation. This makes the solution independent of CSV row order.
 
 ## Result
 
+The updated CSV gives:
+
+```text
+theta = 0.523598303 rad
+theta = 29.999972932 deg
+M     = 0.029999997
+X     = 54.999998213
 ```
-theta = 0.488517 rad  (27.9900 deg)
-M     = 0.021044
-X     = 63.390944
+
+The recovered values are essentially:
+
+```text
+theta ≈ 30°
+M     ≈ 0.03
+X     ≈ 55
 ```
 
-Desmos/LaTeX submission string:
+## Validation
 
+```text
+Number of data points: 1500
+Implied t range: (6.049405473, 59.995170702)
+Normal-residual RMSE: 3.486161151328e-06
+Maximum absolute normal residual: 1.761505486408e-05
 ```
-\left(t*\cos(0.4885)-e^{0.0210\left|t\right|}\cdot\sin(0.3t)\sin(0.4885)+63.3909,42+t*\sin(0.4885)+e^{0.0210\left|t\right|}\cdot\sin(0.3t)\cos(0.4885)\right)
+
+The very small residual confirms that the fitted parameters reproduce the supplied data to numerical precision.
+
+## Files
+
+- `xy_data.csv` — the supplied new CSV data.
+- `fit_curve.py` — updated fitting solution that handles shuffled rows.
+- `submission.txt` — fitted parameters and Desmos/LaTeX expression.
+- `fit_plot.png` — visual comparison of the new data with the fitted curve.
+- `README.md` — explanation of the updated method and results.
+
+## How to run
+
+Install dependencies:
+
+```bash
+pip install numpy pandas scipy matplotlib
 ```
-##Graph(Desmos link)
-https://www.desmos.com/calculator/7katdxirsn
 
+Then run:
 
+```bash
+python fit_curve.py
+```
 
+The script prints the fitted parameters and writes/updates:
 
+- `submission.txt`
+- `fit_plot.png`
 
+## Desmos / LaTeX expression
+
+```text
+\left(t\cos(0.523598)-e^{0.030000|t|}\sin(0.3t)\sin(0.523598)+54.999998,42+t\sin(0.523598)+e^{0.030000|t|}\sin(0.3t)\cos(0.523598)\right)
+```

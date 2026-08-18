@@ -1,0 +1,10 @@
+theta (rad) = 0.523598303
+theta (deg) = 29.999972932
+M = 0.029999997
+X = 54.999998213
+RMSE (normal residual) = 3.486161151328e-06
+Max |normal residual| = 1.761505486408e-05
+Implied t range = (6.049405473, 59.995170702)
+
+Desmos/LaTeX string:
+\left(t\cos(0.523598)-e^{0.030000|t|}\sin(0.3t)\sin(0.523598)+54.999998,42+t\sin(0.523598)+e^{0.030000|t|}\sin(0.3t)\cos(0.523598)\right)
